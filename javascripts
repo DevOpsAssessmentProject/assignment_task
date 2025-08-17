@@ -1,0 +1,58 @@
+function solution(D) {
+  
+    let dateValueMap = {};
+    for (let key in D) {
+        dateValueMap[new Date(key)] = D[key];
+    }
+
+   
+    let sortedDates = Object.keys(dateValueMap)
+        .map(d => new Date(d))
+        .sort((a, b) => a - b);
+
+    let fullDates = {};
+    sortedDates.forEach(d => {
+        fullDates[d] = dateValueMap[d];
+    });
+
+    let startDate = sortedDates[0];
+    let endDate = sortedDates[sortedDates.length - 1];
+
+    let currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+        if (!(currentDate in fullDates)) {
+            
+            let prevDate = new Date(currentDate);
+            prevDate.setDate(prevDate.getDate() - 1);
+            while (!(prevDate in fullDates)) {
+                prevDate.setDate(prevDate.getDate() - 1);
+            }
+
+          
+            let nextDate = new Date(currentDate);
+            nextDate.setDate(nextDate.getDate() + 1);
+            while (!(nextDate in fullDates)) {
+                nextDate.setDate(nextDate.getDate() + 1);
+            }
+
+            
+            fullDates[currentDate] = Math.floor(
+                (fullDates[prevDate] + fullDates[nextDate]) / 2
+            );
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    let result = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+
+    for (let d in fullDates) {
+        let day = new Date(d).getDay(); // 0=Sun,1=Mon,...
+        let key = weekdays[day];
+        result[key] += fullDates[d];
+    }
+
+    return result;
+}
+
+
